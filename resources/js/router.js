@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store/store'
 
-import MemoArea from './components/MemoArea.vue'
+import Editor from './components/pages/EditorView/Editor'
 
 Vue.use(VueRouter)
 
@@ -10,12 +10,12 @@ const routes = [
   {
     path:'/',
     name:'Home',
-    component:MemoArea
+    component:Editor
   },
   {
     path:'/category',
     name:'Category',
-    component:MemoArea
+    component:Editor
   }
 ]
 

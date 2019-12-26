@@ -15,13 +15,20 @@ const getters = {
 
 const mutations = {
   fetchItems(state,res){
-    state.category = res.category
     state.memo = res.memo
+    state.category = res.category
     state.currentItem = res.memo[0]
     console.log('category')
     console.log(res.category)
     console.log('memo')
     console.log(res.memo)
+
+    for(let i = 0; state.category.length > i; i++){
+      const id = state.category[i].id
+      const items = state.memo.filter(i => i.category_id == id)
+      const itemsLength = items.length
+      state.category[i].category_has_memo = itemsLength
+    }
   },
   setCurrentItem(state, item){
     state.currentItem = item
@@ -30,6 +37,7 @@ const mutations = {
     state.currentCategory = categoryId
   },
   storeCategory(state,data){
+    data.category_has_memo = 0
     state.category.push(data)
   },
   deleteCategory(state, { id }){
@@ -40,6 +48,9 @@ const mutations = {
   },
   storeItem(state, data){
     state.memo.push(data)
+    const index = state.category.findIndex(i => i.id == data.category_id)
+    state.category[index].category_has_memo += 1
+    console.log(state.category[index].category_has_memo );
   },
   updateItem({ memo, currentItem }, item){
     const index = memo.findIndex(i => i.id === item.id)
@@ -95,8 +106,6 @@ const actions = {
       })
   },
   createItem({ commit }, item){
-    console.log(item);
-
     axios.post('/api/create/memo', item)
       .then((res)=>{
         console.log(res);

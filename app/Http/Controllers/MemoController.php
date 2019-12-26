@@ -41,4 +41,5 @@ class MemoController extends Controller
       $memo->delete();
       return $request;
     }
+
 }

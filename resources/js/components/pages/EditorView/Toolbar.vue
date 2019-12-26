@@ -1,5 +1,5 @@
 <template>
-    <div class="toolbar">
+  <div class="toolbar">
     <!-- <div class="toolbar__category">{{ }} &gt; {{  }}</div> -->
     <button class="toolbar__btn--fav" :class="{ 'js-fav': fetchData.currentItem.memo_is_fav == true }" type="button" @click="onClickFav(fetchData.currentItem.id)">
       <i class="fas fa-star fa-lg" v-show="fetchData.currentItem.memo_is_fav == true"></i>

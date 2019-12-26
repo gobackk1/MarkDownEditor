@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MemoToolbar />
+    <Toolbar />
     <div
       v-for="memo in fetchData.memo"
       :key="memo.id"
@@ -9,14 +9,14 @@
       class="memo"
     >
       <textarea name="body" v-model="memo.memo_body" v-show="fetchData.editor"></textarea>
-      <renderMemo :content="memo.memo_body" v-show="!fetchData.editor"></renderMemo>
+      <MarkDownBody :content="memo.memo_body" v-show="!fetchData.editor"></MarkDownBody>
     </div>
   </div>
 </template>
 
 <script>
-  import renderMemo from './renderMemo'
-  import MemoToolbar from './MemoToolbar'
+  import MarkDownBody from './MarkDownBody'
+  import Toolbar from './Toolbar'
 
   export default {
     data(){
@@ -28,8 +28,8 @@
       this.fetchData = this.$store.state.memodata
     },
     components:{
-      renderMemo,
-      MemoToolbar
+      MarkDownBody,
+      Toolbar
     },
   }
 </script>

@@ -24,4 +24,5 @@ Route::group(['middleware' => ['api']],function(){
   Route::post('update/memo', 'MemoController@update');
   Route::post('delete/category', 'CategoryController@delete');
   Route::post('delete/memo', 'MemoController@delete');
+  Route::post('test', 'MemoController@test');
 });
