@@ -34,7 +34,7 @@
         }
       },
       onClickEdit(id){
-        this.toggleEditor()
+        this.toggle('editor')
         this.editItem(id)
       },
       onClickFav(id){
@@ -53,7 +53,7 @@
       ...mapActions('memodata', [
         'updateItem',
         'deleteItem',
-        'toggleEditor'
+        'toggle'
       ])
     }
   }

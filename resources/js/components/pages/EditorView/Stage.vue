@@ -8,8 +8,8 @@
       v-show="fetchData.currentItem.id === memo.id"
       class="memo"
     >
-      <textarea name="body" v-model="memo.memo_body" v-show="fetchData.editor"></textarea>
-      <MarkDownBody :content="memo.memo_body" v-show="!fetchData.editor"></MarkDownBody>
+      <textarea name="body" v-model="memo.memo_body" v-show="fetchData.toggle.editor"></textarea>
+      <MarkDownBody :content="memo.memo_body" v-show="!fetchData.toggle.editor"></MarkDownBody>
     </div>
   </div>
 </template>

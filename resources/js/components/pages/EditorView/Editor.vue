@@ -1,9 +1,8 @@
 <template>
   <div class="editor">
-    <div class="editor-list">
-      <nav>
-      <h2>MemoList</h2>
-      <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
+    <nav>
+    <h2>MemoList</h2>
+    <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
       <ul>
         <li
           v-for="memo in fetchData.memo"
@@ -15,7 +14,6 @@
         >{{ memo.memo_title }}</li>
       </ul>
     </nav>
-    </div>
     <div class="editor-stage">
       <Stage />
     </div>
@@ -25,6 +23,7 @@
 <script>
 import Stage from './Stage.vue'
 import { mapActions } from 'vuex'
+import { eventBus } from '../../../app'
 
 export default {
   data(){
@@ -54,7 +53,7 @@ export default {
       }
       if(memoTitle){
         this.createItem(memo)
-        this.$emit('updated')
+        this.$emit('update')
       }
     },
     ...mapActions('memodata',[
@@ -73,10 +72,7 @@ export default {
   .editor{
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    &-list{
-      width: 200px;
-    }
+    flex:auto;
     &-stage{
       flex:auto;
     }
@@ -86,12 +82,15 @@ export default {
     margin-bottom: 10px;
   }
   nav{
+    width: 250px;
     position:relative;
     box-sizing:border-box;
     background: #FAFAFA;
     padding:10px;
     height: calc(100vh - 36px);
     border-right:1px solid #eaeaea;
+    resize: horizontal;
+    overflow:hidden;
   }
   li{
     display: block;

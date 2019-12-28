@@ -1,26 +1,27 @@
 <template>
-  <div class="content">
-    <nav>
+  <div class="content" :aria-expanded="fetchData.toggle.nav ? 'true' : 'false'" id="content">
+    <nav class="nav">
       <div>全てのメモ：{{fetchData.memo.length}}</div>
-      <h2>CategoryList</h2>
+      <h2 class="nav__ttl">CategoryList</h2>
       <button type="button" class="create-category" @click="createCategory()"><i class="fas fa-plus-square fa-2x"></i></button>
-      <ul @click.right.prevent="onClickList">
-        <li v-for="category in fetchData.category" :key="category.id" @click="setCurrentCategory(category.id)">
-          <RouterLink
-            :data-category-id="category.id"
-            :to="{ path:'category', query: {id: category.id}}"
-            :class="{ 'js-active': fetchData.currentCategory === category.id}"
-          >{{ category.category_name }}<span class="num-of-memo">{{ getNumOfMemo(category.id) }}</span></RouterLink>
-        </li>
-        <!-- <li><RouterLink :to="{ path:'category', query: {id: 'trash'} }">ゴミ箱</RouterLink></li> -->
+      <ul>
+        <CategoryListItem
+          v-for="category in fetchData.category"
+          :key="category.id"
+          :category="category"
+        ></CategoryListItem>
       </ul>
+      <button class="nav__toggle" type="button" @click="toggleNav" aria-controls="content"></button>
     </nav>
-    <RouterView @updated="test" />
+    <RouterView />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { mapActions } from 'vuex'
+import CategoryListItem from '../pages/EditorView/CategoryListItem'
+
   export default {
     data(){
       return {
@@ -30,112 +31,75 @@ import axios from 'axios'
     created(){
       this.fetchData = this.$store.state.memodata
     },
-    computed:{
-      getNumOfMemo(){
-        return id => {
-          try {
-            const index = this.fetchData.category.findIndex(i => i.id === id)
-            const sum = this.fetchData.category[index].category_has_memo
-            return sum
-          } catch(e) {
-            console.log('wait');
-          }
-        }
-      }
-    },
     updated(){
+
       console.log('親のアップデート呼び出し')
     },
     methods:{
-      test(){
-        console.log('updated router')
-        console.log(this.fetchData = this.$store.state.memodata);
-
-        this.fetchData = this.$store.state.memodata
-      },
       createCategory(){
         const categoryName = prompt('カテゴリー名を入力して下さい。')
         if(categoryName){
-          this.$store.dispatch('memodata/createCategory', categoryName)
+          this.setCategory(categoryName)
         }
       },
-      setCurrentCategory(id){
-        this.$store.dispatch('memodata/setCurrentCategory', id)
+      // setCurrentCategory(id){
+      //   this.$store.dispatch('memodata/setCurrentCategory', id)
+      // },
+      toggleNav(){
+        this.toggle('nav')
       },
-      deleteCategory(id){
-        if(confirm('カテゴリーを削除しても良いですか？カテゴリーに属すメモも同時に削除されます。（ゴミ箱に残りません）')){
-          this.$store.dispatch('memodata/deleteCategory', id)
-        }
-      },
-      onClickList(e){
-        const id = e.target.dataset.categoryId
-        console.log(id);
-
-        this.deleteCategory(id)
-      }
+      ...mapActions('memodata',[
+        'setCategory',
+        'deleteCategory',
+        'toggle'
+      ])
+    },
+    components:{
+      CategoryListItem
     }
   }
 </script>
 
 <style scoped lang="scss">
+
   .content{
     display:flex;
+    transition:transform .3s ease;
+    &[aria-expanded="false"]{
+      transform: translateX(-200px);
+      margin-right: -200px;
+    }
+    &[aria-expanded="true"]{
+      transform: translateX(-0px);
+      margin-right: 0px;
+    }
   }
-  h2{
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-  nav{
+
+  .nav{
     position:relative;
     box-sizing:border-box;
     background:#232628;
     color:#fff;
     padding:10px;
     height: calc(100vh - 36px);
-    width: 200px;
-  }
-  li{
-    display: block;
-    a{
-      display:block;
-      padding: 10px 10px 10px 20px;
-      position: relative;
-      &::before{
-        font-family: "Font Awesome 5 free";
-        content: '\f07b';
-        font-weight: 400;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0px;
-        margin:auto;
-        height: 16px;
-      }
-      &:not(.router-link-exact-active):hover{
-        background:#224e4b;
-        color:#47cec5;
-      }
+    width: 250px;
+    &__ttl{
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    &__toggle{
+      position: absolute;
+      bottom: 10px;
+      right: 6px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
     }
   }
-  .router-link-exact-active{
-    color:#35f5e8;
-    background:#4a8682;
-  }
-  button{
-    background:none;
-    border:none;
-    color:inherit;
+
+  .create-category{
     position: absolute;
     top: 6px;
     right: 6px;
-    transition:.3s;
-    cursor:pointer;
-    &:hover{
-      transform:scale(1.2);
-    }
-  }
-  .num-of-memo{
-    position: absolute;
-    right: 0;
   }
 </style>

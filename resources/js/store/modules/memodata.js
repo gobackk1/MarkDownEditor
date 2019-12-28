@@ -1,11 +1,22 @@
 import axios from 'axios'
 
+const test1 = index =>{
+  state.category[index].category_has_memo = () => {
+    const id = state.category[index].id
+    const items = state.memo.filter(i => i.category_id == id)
+    return items.length
+  }
+}
+
 const state = {
   category:{},
   memo:{},
   currentItem:{},
   // currentCategory:1,
-  editor:false,
+  toggle:{
+    editor:false,
+    nav:true,
+  },
   test:'test'
 }
 
@@ -24,10 +35,7 @@ const mutations = {
     console.log(res.memo)
 
     for(let i = 0; state.category.length > i; i++){
-      const id = state.category[i].id
-      const items = state.memo.filter(i => i.category_id == id)
-      const itemsLength = items.length
-      state.category[i].category_has_memo = itemsLength
+      test1(i)
     }
   },
   setCurrentItem(state, item){
@@ -37,8 +45,29 @@ const mutations = {
     state.currentCategory = categoryId
   },
   storeCategory(state,data){
-    data.category_has_memo = 0
+    // data.category_has_memo = () => {
+    //   const id = data.id
+    //   const items = state.memo.filter(i => i.category_id == id)
+    //   return items.length
+    // }
     state.category.push(data)
+    const index = state.category.findIndex(i => i.id === data.id)
+    test1(index)
+    // state.category[index].category_has_memo = () => {
+    //   const id = state.category[index].id
+    //   const items = state.memo.filter(i => i.category_id == id)
+    //   return items.length
+    // }
+  },
+  updateCategory({ category }, item){
+    const index = category.findIndex(i => i.id === item.id)
+    category[index] = item
+    test1(index)
+    // state.category[index].category_has_memo = () => {
+    //   const id = state.category[index].id
+    //   const items = state.memo.filter(i => i.category_id == id)
+    //   return items.length
+    // }
   },
   deleteCategory(state, { id }){
     const index = state.category.findIndex(i => i.id === id)
@@ -49,8 +78,6 @@ const mutations = {
   storeItem(state, data){
     state.memo.push(data)
     const index = state.category.findIndex(i => i.id == data.category_id)
-    state.category[index].category_has_memo += 1
-    console.log(state.category[index].category_has_memo );
   },
   updateItem({ memo, currentItem }, item){
     const index = memo.findIndex(i => i.id === item.id)
@@ -60,8 +87,10 @@ const mutations = {
     const index = state.memo.findIndex(i => i.id === id)
     state.memo.splice(index, 1)
   },
-  toggleEditor(state){
-    state.editor = !state.editor
+  toggle(state, key){
+    state.toggle[key] = !state.toggle[key]
+    console.log(state.toggle[key])
+
   }
 }
 
@@ -81,35 +110,32 @@ const actions = {
   setCurrentCategory({ commit },id){
     commit('setCurrentCategory',id)
   },
-  createCategory({ commit },categoryName){
+  setCategory({ commit },categoryName){
     const req = {
       categoryName: categoryName
     }
     axios.post('/api/create/category',req)
       .then((res)=>{
         commit('storeCategory', res.data)
+        console.log(res.data)
       })
       .catch((e)=>{
         alert(e)
       })
   },
-  deleteCategory({ commit } ,id){
-    const req = {
-      id: id
-    }
-    axios.post('/api/delete/category', req)
-      .then((res)=>{
-        commit('deleteCategory', res.data)
-      })
-      .catch((e)=>{
-        alert(e)
-      })
+  updateCategory({ commit }, item){
+    axios.post('/api/update/category', item)
+      .then( res => commit('updateCategory', res.data))
+      .catch( e => alert(e))
+  },
+  deleteCategory({ commit }, category){
+    axios.post('/api/delete/category', category)
+      .then( res => commit('deleteCategory', res.data))
+      .catch( e => alert(e))
   },
   createItem({ commit }, item){
     axios.post('/api/create/memo', item)
       .then((res)=>{
-        console.log(res);
-
         commit('storeItem', res.data)
       })
       .catch((e)=>{
@@ -137,9 +163,9 @@ const actions = {
         alert(e)
       })
   },
-  toggleEditor({ commit }){
-    commit('toggleEditor')
-  }
+  toggle({ commit }, key){
+    commit('toggle', key)
+  },
 }
 
 const memodata = {

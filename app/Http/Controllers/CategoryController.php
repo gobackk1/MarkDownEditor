@@ -11,6 +11,16 @@ class CategoryController extends Controller
       $category = new Category();
       $category->category_sort_num = 1;
       $category->category_name = $request->categoryName;
+      $category->category_icon = '#fff';
+      $category->save();
+      return $category;
+    }
+
+    public function update(Request $request){
+      $category = Category::findOrFail($request->id);
+      $category->category_sort_num = $request->category_sort_num;
+      $category->category_name = $request->category_name;
+      $category->category_icon = $request->category_icon;
       $category->save();
       return $category;
     }

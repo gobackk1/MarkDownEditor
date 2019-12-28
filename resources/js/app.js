@@ -3,7 +3,9 @@ import router from './router'
 import store from './store/store'
 import App from './components/App.vue'
 
-const vm = new Vue ({
+export const eventBus = new Vue()
+
+window.vm = new Vue ({
   el:'#app',
   router,
   store,
@@ -12,5 +14,3 @@ const vm = new Vue ({
     this.$store.dispatch('memodata/fetchItems')
   },
 })
-
-window.vm = vm
