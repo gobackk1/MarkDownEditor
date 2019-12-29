@@ -1,21 +1,23 @@
 <template>
   <div class="editor">
-    <nav>
-    <h2>MemoList</h2>
-    <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
-      <ul>
-        <li
-          v-for="memo in fetchData.memo"
-          :key="memo.id"
-          v-if="memo.category_id == $route.query.id"
-          @click="onClickItem(memo)"
-          :class="{ 'js-active': fetchData.currentItem.id === memo.id}"
-          tabindex="0"
-        >{{ memo.memo_title }}</li>
-      </ul>
-    </nav>
-    <div class="editor-stage">
-      <Stage />
+    <div class="editor__list">
+      <input type="text" class="editor__search" @input="onChangeSearchInput" placeholder="検索">
+      <nav>
+        <h2>MemoList</h2>
+        <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
+        <ul id="memo-list">
+          <li
+            v-for="memo in activeData"
+            :key="memo.id"
+            @click="onClickItem(memo)"
+            :class="{ 'js-active': fetchData.currentItem.id === memo.id}"
+            tabindex="0"
+          >{{ memo.memo_title }}</li>
+        </ul>
+      </nav>
+    </div>
+    <div class="editor__stage">
+      <Stage :active-data="activeData" />
     </div>
   </div>
 </template>
@@ -29,18 +31,43 @@ export default {
   data(){
     return {
       fetchData: [],
-      currentItem: {},
+      activeData: [],
     }
   },
-  mounted(){
-    this.initItem()
+  watch:{
+    '$route' (to, from){
+      this.setActiveDataByKey(this.$route.params.id)
+    }
   },
   created(){
     this.fetchData = this.$store.state.memodata
   },
+  mounted(){
+    eventBus.$on('init', ev => {
+      console.log(ev)
+      this.setActiveDataByKey(this.$route.params.id, ev)
+    })
+    eventBus.$on('item', ev => {
+      this.setActiveDataByKey(this.$route.params.id, ev)
+    })
+  },
   methods:{
-    initItem(){
-      // this.$store.state.memodata.currentItem = this.$store.state.memodata.memo[0]
+    setActiveDataByKey(key, ev){
+      let items
+      if(key === 'fav' || key === 'trash'){
+        const k = `memo_is_${key}`
+        items = this.fetchData.memo.filter(i => i[k] == true)
+      } else if(key === 'all') {
+        items = this.fetchData.memo.filter(i => i.memo_is_trash == false)
+      } else {
+        items = this.fetchData.memo.filter(i => i.category_id == key && i.memo_is_trash == false)
+      }
+      if(items){
+        if(ev === 'deleted' || ev === 'cleared'){
+          this.setCurrentItem(items[0])
+        }
+        this.activeData = items
+      }
     },
     onClickItem(item){
       this.setCurrentItem(item)
@@ -49,12 +76,21 @@ export default {
       const memoTitle = prompt('タイトルを入力して下さい。')
       const memo = {
         memoTitle: memoTitle,
-        categoryId: this.$route.query.id,
+        categoryId: this.$route.params.id,
       }
       if(memoTitle){
         this.createItem(memo)
-        this.$emit('update')
       }
+    },
+    onChangeSearchInput(e){
+      const val = e.target.value
+      const items = this.fetchData.memo.filter(i =>
+        i.memo_body.indexOf(val) !== -1
+        && i.category_id == this.$route.params.id
+        && i.memo_is_trash === "0"
+      )
+      this.setCurrentItem(items[0])
+      this.activeData = items
     },
     ...mapActions('memodata',[
       'setCurrentItem',
@@ -73,24 +109,24 @@ export default {
     display: flex;
     justify-content: space-between;
     flex:auto;
-    &-stage{
+    &__list{
+      width: 250px;
+      background: #FAFAFA;
+      padding:10px;
+      height: calc(100vh - 36px);
+      border-right:1px solid #eaeaea;
+      resize: horizontal;
+      overflow:hidden;
+      position:relative;
+      box-sizing:border-box;
+    }
+    &__stage{
       flex:auto;
     }
   }
   h2{
     font-weight: bold;
     margin-bottom: 10px;
-  }
-  nav{
-    width: 250px;
-    position:relative;
-    box-sizing:border-box;
-    background: #FAFAFA;
-    padding:10px;
-    height: calc(100vh - 36px);
-    border-right:1px solid #eaeaea;
-    resize: horizontal;
-    overflow:hidden;
   }
   li{
     display: block;

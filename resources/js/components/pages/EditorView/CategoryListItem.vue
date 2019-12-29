@@ -1,6 +1,6 @@
 <template>
   <li class="list-item" v-if="fetchData">
-    <RouterLink :to="{ path:'category', query: {id: category.id}}" class="list-item__link">
+    <RouterLink :to="{ name:'Category', params: {id: category.id}}" class="list-item__link">
       <span class="list-item__text">{{ category.category_name }}</span>
       <span class="list-item__num">{{ category.category_has_memo() }}</span>
     </RouterLink>
@@ -40,7 +40,6 @@ export default {
   },
   created(){
     this.fetchData = this.$store.state.memodata
-    eventBus.$on('testEvent',() => console.log('success'))
   },
   computed:{
     iconStyles(){

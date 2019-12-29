@@ -13,7 +13,7 @@ const routes = [
     component:Editor
   },
   {
-    path:'/category',
+    path:'/category/:id',
     name:'Category',
     component:Editor
   }

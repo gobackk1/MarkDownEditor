@@ -1,17 +1,35 @@
 <template>
-  <div class="content" :aria-expanded="fetchData.toggle.nav ? 'true' : 'false'" id="content">
+  <div class="content" :class="fetchData.toggle.nav ? '_tgl-nav-true' : '_tgl-nav-false'">
     <nav class="nav">
-      <div>全てのメモ：{{fetchData.memo.length}}</div>
-      <h2 class="nav__ttl">CategoryList</h2>
-      <button type="button" class="create-category" @click="createCategory()"><i class="fas fa-plus-square fa-2x"></i></button>
-      <ul>
-        <CategoryListItem
-          v-for="category in fetchData.category"
-          :key="category.id"
-          :category="category"
-        ></CategoryListItem>
+      <ul class="nav__head nav-total">
+        <li class="nav-total__item">
+          <RouterLink :to="{name: 'Category', params:{id: 'all'}}">
+            すべてのメモ:<div class="nav-total__num">{{ numberOfAll }}</div>
+          </RouterLink>
+        </li>
+        <li class="nav-total__item">
+          <RouterLink :to="{name: 'Category', params:{id: 'fav'}}">
+            お気に入り:<div class="nav-total__num">{{ numberOfFav }}</div>
+          </RouterLink>
+        </li>
+        <li class="nav-total__item" @click.right.prevent="onRightClickTrash">
+          <RouterLink :to="{name: 'Category', params:{id: 'trash'}}">
+            ゴミ箱:<div class="nav-total__num">{{ numberOfTrash }}</div>
+          </RouterLink>
+        </li>
       </ul>
-      <button class="nav__toggle" type="button" @click="toggleNav" aria-controls="content"></button>
+      <div class="nav__body">
+        <h2 class="nav__ttl">CategoryList</h2>
+        <button type="button" class="create-category" @click="createCategory()"><i class="fas fa-plus-square fa-2x"></i></button>
+        <ul>
+          <CategoryListItem
+            v-for="category in fetchData.category"
+            :key="category.id"
+            :category="category"
+          ></CategoryListItem>
+        </ul>
+      </div>
+      <button class="nav__toggle" type="button" @click="toggleNav"></button>
     </nav>
     <RouterView />
   </div>
@@ -32,8 +50,18 @@ import CategoryListItem from '../pages/EditorView/CategoryListItem'
       this.fetchData = this.$store.state.memodata
     },
     updated(){
-
       console.log('親のアップデート呼び出し')
+    },
+    computed:{
+      numberOfAll(){
+        return this.getTotalNumberByKey('all')
+      },
+      numberOfFav(){
+        return this.getTotalNumberByKey('memo_is_fav')
+      },
+      numberOfTrash(){
+        return this.getTotalNumberByKey('memo_is_trash')
+      },
     },
     methods:{
       createCategory(){
@@ -42,15 +70,40 @@ import CategoryListItem from '../pages/EditorView/CategoryListItem'
           this.setCategory(categoryName)
         }
       },
-      // setCurrentCategory(id){
-      //   this.$store.dispatch('memodata/setCurrentCategory', id)
-      // },
+      getTotalNumberByKey(key){
+        try{
+          let counter = 0
+          let k = ''
+          let cond = true
+          if(key === 'all'){
+            k = 'memo_is_trash'
+            cond = false
+          } else {
+            k = key
+          }
+          this.fetchData.memo.forEach(i => {
+            if(i[k] == cond){
+              counter++
+            }
+          })
+          return counter
+        } catch(e) {
+          console.log('非同期通信中')//APIからのデータがdataに格納される前に算出しようとしたら
+        }
+      },
       toggleNav(){
         this.toggle('nav')
+      },
+      onRightClickTrash(){
+        if(confirm('ゴミ箱のメモを全て削除してよろしいですか？')){
+          const clearItems = this.fetchData.memo.filter(i => i.memo_is_trash == true)
+          this.clearTrash(clearItems)
+        }
       },
       ...mapActions('memodata',[
         'setCategory',
         'deleteCategory',
+        'clearTrash',
         'toggle'
       ])
     },
@@ -63,13 +116,14 @@ import CategoryListItem from '../pages/EditorView/CategoryListItem'
 <style scoped lang="scss">
 
   .content{
+    height: calc(100vh - 37px);
     display:flex;
     transition:transform .3s ease;
-    &[aria-expanded="false"]{
+    &._tgl-nav-true{
       transform: translateX(-200px);
       margin-right: -200px;
     }
-    &[aria-expanded="true"]{
+    &._tgl-nav-false{
       transform: translateX(-0px);
       margin-right: 0px;
     }
@@ -87,6 +141,13 @@ import CategoryListItem from '../pages/EditorView/CategoryListItem'
       margin-bottom: 10px;
       font-weight: bold;
     }
+    &__head{
+
+    }
+    &__body{
+      position:relative;
+      height: 100%;
+    }
     &__toggle{
       position: absolute;
       bottom: 10px;
@@ -97,9 +158,23 @@ import CategoryListItem from '../pages/EditorView/CategoryListItem'
     }
   }
 
+  .nav-total{
+    &__item{
+      position:relative;
+    }
+    &__num{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin:auto;
+      display: inline-block;
+    }
+  }
+
   .create-category{
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 0px;
+    right: 0px;
   }
 </style>

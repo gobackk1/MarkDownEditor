@@ -8,6 +8,11 @@ a{
   text-decoration: none;
 }
 
+body{
+  height: 100vh;
+  overflow: hidden;
+}
+
 *:focus{
   // outline: none;
 }
@@ -15,6 +20,5 @@ button{
   background:none;
   border:none;
   color:inherit;
-  transition:.3s;
   cursor:pointer;
 }

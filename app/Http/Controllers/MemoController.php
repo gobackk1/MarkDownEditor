@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Memo;
 use App\Category;
 
@@ -42,4 +43,8 @@ class MemoController extends Controller
       return $request;
     }
 
+    public function clear_trash(Request $request){
+      $deleted = DB::delete('delete from memos where memo_is_trash = ?',[1]);
+      return $request;
+    }
 }

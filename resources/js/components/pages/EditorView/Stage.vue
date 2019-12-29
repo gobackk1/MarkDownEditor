@@ -2,9 +2,8 @@
   <div>
     <Toolbar />
     <div
-      v-for="memo in fetchData.memo"
+      v-for="memo in activeData"
       :key="memo.id"
-      v-if="memo.category_id == $route.query.id"
       v-show="fetchData.currentItem.id === memo.id"
       class="memo"
     >
@@ -22,6 +21,11 @@
     data(){
       return {
         fetchData:[],
+      }
+    },
+    props:{
+      activeData:{
+        type: Array
       }
     },
     created(){
