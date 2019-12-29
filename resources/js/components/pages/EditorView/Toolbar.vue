@@ -64,9 +64,12 @@
       },
       onClickTrash(id){
         const item = this.getItemById(id)
+        if(item.memo_is_fav){
+          alert('お気にり登録したメモはゴミ箱へ移動できません。')
+          return
+        }
         item.memo_is_trash = !item.memo_is_trash
         this.updateItem(item)
-        this.setCurrentItem()
       },
       onClickFav(id){
         const item = this.getItemById(id)
