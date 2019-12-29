@@ -6,6 +6,7 @@
       :key="memo.id"
       v-show="fetchData.currentItem.id === memo.id"
       class="memo"
+      @click.right.prevent="onRightClickView"
     >
       <textarea name="body" v-model="memo.memo_body" v-show="fetchData.toggle.editor"></textarea>
       <MarkDownBody :content="memo.memo_body" v-show="!fetchData.toggle.editor"></MarkDownBody>
@@ -21,6 +22,7 @@
     data(){
       return {
         fetchData:[],
+        editButton:''
       }
     },
     props:{
@@ -30,6 +32,14 @@
     },
     created(){
       this.fetchData = this.$store.state.memodata
+    },
+    mounted(){
+      this.editButton = document.querySelector('.toolbar__btn--edit')
+    },
+    methods:{
+      onRightClickView(){
+        this.editButton.click()
+      },
     },
     components:{
       MarkDownBody,
