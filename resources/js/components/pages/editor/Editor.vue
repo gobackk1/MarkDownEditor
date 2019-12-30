@@ -2,19 +2,17 @@
   <div class="editor">
     <div class="editor__list">
       <input type="text" class="editor__search" @input="onChangeSearchInput" placeholder="検索">
-      <nav>
-        <h2>MemoList</h2>
-        <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
-        <ul id="memo-list">
-          <li
-            v-for="memo in activeData"
-            :key="memo.id"
-            @click="onClickItem(memo)"
-            :class="{ 'js-active': fetchData.currentItem.id === memo.id}"
-            tabindex="0"
-          >{{ memo.memo_title }}</li>
-        </ul>
-      </nav>
+      <h2>MemoList</h2>
+      <button type="button" class="create-memo" @click="onClickBtn()"><i class="fas fa-plus fa-lg"></i></i></button>
+      <ul id="memo-list">
+        <li
+          v-for="memo in activeData"
+          :key="memo.id"
+          @click="onClickItem(memo)"
+          :class="{ 'js-active': fetchData.currentItem.id === memo.id}"
+          tabindex="0"
+        >{{ memo.memo_title }}</li>
+      </ul>
     </div>
     <div class="editor__stage">
       <Stage :active-data="activeData" />

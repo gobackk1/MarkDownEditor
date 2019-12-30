@@ -2,7 +2,10 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store/store'
 
-import Editor from './components/pages/EditorView/Editor'
+import Editor from './components/pages/editor/Editor'
+import PatchNote from './components/pages/patchnote/PatchNote'
+import Help from './components/pages/help/Help'
+import Setting from './components/pages/setting/Setting'
 
 Vue.use(VueRouter)
 
@@ -16,7 +19,22 @@ const routes = [
     path:'/category/:id',
     name:'Category',
     component:Editor
-  }
+  },
+  {
+    path:'/patchnote',
+    name:'PatchNote',
+    component:PatchNote
+  },
+  {
+    path:'/help',
+    name:'Help',
+    component:Help
+  },
+  {
+    path:'/setting',
+    name:'Setting',
+    component:Setting
+  },
 ]
 
 const router = new VueRouter({
