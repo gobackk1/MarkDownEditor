@@ -10,6 +10,7 @@ const test1 = index =>{
 }
 
 const state = {
+  user: null,
   category:{},
   memo:{},
   currentItem:{},

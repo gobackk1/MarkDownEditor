@@ -64,7 +64,7 @@
       },
       onClickTrash(id){
         const item = this.getItemById(id)
-        if(item.memo_is_fav){
+        if(item.memo_is_fav === '1'){
           alert('お気にり登録したメモはゴミ箱へ移動できません。')
           return
         }

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store/store'
 
+import Home from './components/pages/home/Home'
 import Editor from './components/pages/editor/Editor'
 import PatchNote from './components/pages/patchnote/PatchNote'
 import Help from './components/pages/help/Help'
@@ -13,7 +14,7 @@ const routes = [
   {
     path:'/',
     name:'Home',
-    component:Editor
+    component:Home
   },
   {
     path:'/category/:id',
