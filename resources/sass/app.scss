@@ -8,6 +8,34 @@ a{
   text-decoration: none;
 }
 
+body{
+  height: 100vh;
+  overflow: hidden;
+}
+
 *:focus{
   // outline: none;
+}
+button{
+  background:none;
+  border:none;
+  color:inherit;
+  cursor:pointer;
+}
+
+.markdown-body{
+  ol{
+    list-style: decimal;
+  }
+  ul{
+    list-style:disc;
+  }
+}
+
+@mixin cf(){
+  &::after{
+    content:'';
+    display: block;
+    clear:both;
+  }
 }

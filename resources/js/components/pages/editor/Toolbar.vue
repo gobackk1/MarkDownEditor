@@ -1,11 +1,29 @@
 <template>
-    <div class="toolbar">
+  <div class="toolbar">
     <!-- <div class="toolbar__category">{{ }} &gt; {{  }}</div> -->
-    <button class="toolbar__btn--fav" :class="{ 'js-fav': fetchData.currentItem.memo_is_fav == true }" type="button" @click="onClickFav(fetchData.currentItem.id)">
-      <i class="fas fa-star fa-lg" v-show="fetchData.currentItem.memo_is_fav == true"></i>
-      <i class="far fa-star fa-lg" v-show="fetchData.currentItem.memo_is_fav == false"></i>
+    <button
+      class="toolbar__btn--fav"
+      :class="{
+        '_fav-is-true': fetchData.currentItem.memo_is_fav == true,
+        '_fav-is-false': fetchData.currentItem.memo_is_fav == false,
+      }"
+      type="button"
+      @click="onClickFav(fetchData.currentItem.id)"
+    >
+      <i class="fa-star fa-lg" :class="{
+        'fas': fetchData.currentItem.memo_is_fav == true,
+        'far': fetchData.currentItem.memo_is_fav == false,
+      }"></i>
     </button>
-    <button class="toolbar__btn--del" type="button" @click="deleteConfirm(fetchData.currentItem.id)">
+    <button
+      class="toolbar__btn--del"
+      :class="{
+        '_trash-is-true': fetchData.currentItem.memo_is_trash == true,
+        '_trash-is-false': fetchData.currentItem.memo_is_trash == false,
+      }"
+      type="button"
+      @click="onClickTrash(fetchData.currentItem.id)"
+    >
       <i class="fas fa-trash-alt fa-lg"></i>
     </button>
     <button class="toolbar__btn--edit" type="button" @click="onClickEdit(fetchData.currentItem.id)">
@@ -16,26 +34,42 @@
 
 <script>
   import { mapActions } from 'vuex'
+  import { eventBus } from '../../../app'
 
   export default {
     data(){
       return {
         fetchData:[],
+        fav:'',
         confirmText:'このメモをゴミ箱へ移動しますか？',
       }
     },
     created(){
       this.fetchData = this.$store.state.memodata
     },
+    mounted(){
+      eventBus.$on('init', e => {
+        this.fetchData = this.$store.state.memodata
+      })
+    },
+    watch:{
+      '$route' (to, from){
+        this.fetchData = this.$store.state.memodata
+      }
+    },
     methods:{
-      deleteConfirm(id){
-        if(confirm(this.confirmText)){
-          this.deleteItem(id)
-        }
-      },
       onClickEdit(id){
-        this.toggleEditor()
+        this.toggle('editor')
         this.editItem(id)
+      },
+      onClickTrash(id){
+        const item = this.getItemById(id)
+        if(item.memo_is_fav === '1'){
+          alert('お気にり登録したメモはゴミ箱へ移動できません。')
+          return
+        }
+        item.memo_is_trash = !item.memo_is_trash
+        this.updateItem(item)
       },
       onClickFav(id){
         const item = this.getItemById(id)
@@ -52,8 +86,8 @@
       },
       ...mapActions('memodata', [
         'updateItem',
-        'deleteItem',
-        'toggleEditor'
+        'setCurrentItem',
+        'toggle'
       ])
     }
   }
@@ -85,16 +119,26 @@
     &__btn{
       &--fav{
         @extend %toolbar__btn--cmn;
+        &._fav-is-true{
+          color :#ffdf3b;
+        }
+        &._fav-is-false{
+          color :#666;
+        }
       }
       &--del{
         @extend %toolbar__btn--cmn;
+        &._trash-is-true{
+          color:red;
+        }
+        &._trash-is-false{
+          color:#666
+        }
       }
       &--edit{
         @extend %toolbar__btn--cmn;
       }
     }
   }
-  .js-fav{
-    color :#ffdf3b;
-  }
+
 </style>
