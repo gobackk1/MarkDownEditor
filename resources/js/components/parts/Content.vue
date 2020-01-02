@@ -38,7 +38,7 @@
 <script>
 import axios from 'axios'
 import { mapActions } from 'vuex'
-import CategoryListItem from '../pages/EditorView/CategoryListItem'
+import CategoryListItem from '../pages/editor/CategoryListItem'
 
   export default {
     data(){
